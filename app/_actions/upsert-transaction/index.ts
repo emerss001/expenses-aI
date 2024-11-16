@@ -11,6 +11,7 @@ import { AddTransactionSchema } from "./schema";
 import { revalidatePath } from "next/cache";
 
 interface AddTransactionParams {
+  id?: string;
   name: string;
   amount: number;
   type: TransactionType;
@@ -19,7 +20,7 @@ interface AddTransactionParams {
   date: Date;
 }
 
-export const addTransaction = async (params: AddTransactionParams) => {
+export const upsetTransaction = async (params: AddTransactionParams) => {
   AddTransactionSchema.parse(params);
 
   const { userId } = await auth();
@@ -27,8 +28,12 @@ export const addTransaction = async (params: AddTransactionParams) => {
     throw new Error("User not authenticated");
   }
 
-  await db.transaction.create({
-    data: { ...params, userId },
+  await db.transaction.upsert({
+    update: { ...params, userId },
+    create: { ...params, userId },
+    where: {
+      id: params?.id ?? "",
+    },
   });
 
   revalidatePath("/transactions");
