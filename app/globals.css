@@ -78,4 +78,8 @@ body {
   body {
     @apply h-full bg-background text-foreground;
   }
+
+  p {
+    margin: 0 !important;
+  }
 }
