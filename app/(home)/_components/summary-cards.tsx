@@ -5,50 +5,22 @@ import {
   WalletIcon,
 } from "lucide-react";
 import SummaryCard from "./summary-card";
-import { db } from "@/app/_lib/prisma";
 
 interface SummaryCardsProps {
   month: string;
+  balance: number;
+  investmentsTotal: number;
+  depositsTotal: number;
+  expensesTotal: number;
 }
 
-const SummaryCards = async ({ month }: SummaryCardsProps) => {
-  const currentYear = new Date().getFullYear();
-  const where = {
-    date: {
-      gte: new Date(`${currentYear}-${month}-01`),
-      lt: new Date(`${currentYear}-${month}-31`),
-    },
-  };
-
-  const depositsTotal = Number(
-    (
-      await db.transaction.aggregate({
-        where: { ...where, type: "DEPOSIT" },
-        _sum: { amount: true },
-      })
-    )?._sum?.amount,
-  );
-
-  const investmentsTotal = Number(
-    (
-      await db.transaction.aggregate({
-        where: { ...where, type: "INVESTMENT" },
-        _sum: { amount: true },
-      })
-    )?._sum?.amount,
-  );
-
-  const expensesTotal = Number(
-    (
-      await db.transaction.aggregate({
-        where: { ...where, type: "EXPENSE" },
-        _sum: { amount: true },
-      })
-    )?._sum?.amount,
-  );
-
-  const balance = depositsTotal - investmentsTotal - expensesTotal;
-
+const SummaryCards = async ({
+  // month,
+  balance,
+  depositsTotal,
+  expensesTotal,
+  investmentsTotal,
+}: SummaryCardsProps) => {
   return (
     <div className="space-y-6">
       <SummaryCard
