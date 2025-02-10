@@ -41,6 +41,8 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { upsetTransaction } from "../_actions/upsert-transaction";
+import { useState } from "react";
+import { LoaderCircle } from "lucide-react";
 
 interface UpsertTransactionDialogProps {
   isOpen: boolean;
@@ -76,11 +78,13 @@ const UpsertTransactionDialog = ({
   defaultValues,
   transactionId,
 }: UpsertTransactionDialogProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues ?? {
       name: "",
-      amount: 10,
+      // amount: 10,
       type: TransactionType.EXPENSE,
       category: TransactionCategory.OTHER,
       paymentMethod: TransactionPaymentMethod.OTHER,
@@ -89,6 +93,7 @@ const UpsertTransactionDialog = ({
   });
 
   const onSubmit = async (data: FormSchema) => {
+    setIsSubmitting(true);
     try {
       await upsetTransaction({ ...data, id: transactionId });
       setDialogOPen(false);
@@ -260,11 +265,19 @@ const UpsertTransactionDialog = ({
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline" type="button">
+                <Button variant="outline" type="button" disabled={isSubmitting}>
                   Cancelar
                 </Button>
               </DialogClose>
-              <Button type="submit">{isUpdate ? "Salvar" : "Adicionar"}</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <LoaderCircle className="animate-spin" />
+                ) : isUpdate ? (
+                  "Salvar"
+                ) : (
+                  "Adicionar"
+                )}
+              </Button>
             </DialogFooter>
           </form>
         </Form>
