@@ -1,15 +1,13 @@
-version: "3.9"
-
 services:
-    postgres:
-        image: bitnami/postgresql:latest
-        ports:
-            - "5432:5432"
-        environment:
-            - POSTGRES_USER=postgres
-            - POSTGRES_PASSWORD=postgres111
-        volumes:
-            - postgres-data:/bitnami/postgresql
+  postgres:
+    image: bitnami/postgresql:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres111
+    volumes:
+      - postgres-data:/bitnami/postgresql
 
 volumes:
-    postgres-data:
+  postgres-data:
