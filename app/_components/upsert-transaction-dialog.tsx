@@ -100,6 +100,8 @@ const UpsertTransactionDialog = ({
       form.reset();
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
