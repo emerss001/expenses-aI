@@ -41,6 +41,8 @@ enum TransactionCategory {
   HEALTH
   SALARY
   EDUCATION
+  LEISURE
+  INVESTMENT
   OTHER
 }
 

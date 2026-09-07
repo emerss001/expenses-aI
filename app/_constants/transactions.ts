@@ -10,10 +10,12 @@ export const TRANSACTION_CATEGORY_LABELS = {
   FOOD: "Alimentação",
   HEALTH: "Saúde",
   HOUSING: "Moradia",
-  OTHER: "Outros",
+  INVESTMENT: "Investimento",
+  LEISURE: "Lazer",
   SALARY: "Salário",
   TRANSPORTATION: "Transporte",
   UTILITY: "Utilidades",
+  OTHER: "Outros",
 };
 
 export const TRANSACTION_PAYMENT_METHOD_LABELS = {
@@ -106,6 +108,14 @@ export const TRANSACTION_CATEGORY_OPTIONS = [
   {
     value: TransactionCategory.HOUSING,
     label: TRANSACTION_CATEGORY_LABELS[TransactionCategory.HOUSING],
+  },
+  {
+    value: TransactionCategory.INVESTMENT,
+    label: TRANSACTION_CATEGORY_LABELS[TransactionCategory.INVESTMENT],
+  },
+  {
+    value: TransactionCategory.LEISURE,
+    label: TRANSACTION_CATEGORY_LABELS[TransactionCategory.LEISURE],
   },
   {
     value: TransactionCategory.OTHER,
