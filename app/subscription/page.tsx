@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from "../_components/ui/card";
 import { CheckCircleIcon, CheckIcon, XIcon } from "lucide-react";
 import AcquirePlanButton from "./_components/acquire-plan-button";
 import { env } from "../_lib/env";
+import { getCurrentMonthTransactions } from "../_data/get-current-month-transactions";
 
 const SubscriptionPage = async () => {
   const user = await currentUser();
@@ -12,6 +13,8 @@ const SubscriptionPage = async () => {
   if (!user) {
     redirect("/login");
   }
+
+  const currentMonthTransactions = await getCurrentMonthTransactions();
 
   let currentUserPlan = user.publicMetadata?.subscriptionPlan;
 
@@ -88,7 +91,7 @@ const SubscriptionPage = async () => {
                       <p className="text-sm text-muted-foreground">
                         Você já utilizou{" "}
                         <span className="font-semibold text-foreground">
-                          7 de 10
+                          {currentMonthTransactions} de 10
                         </span>
                       </p>
                     </div>
