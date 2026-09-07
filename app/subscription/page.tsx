@@ -1,18 +1,27 @@
-import { auth } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Navbar from "../_components/navbar";
 import { Card, CardContent, CardHeader } from "../_components/ui/card";
-import { CheckIcon, XIcon } from "lucide-react";
-import { Button } from "../_components/ui/button";
+import { CheckCircleIcon, CheckIcon, XIcon } from "lucide-react";
 import AcquirePlanButton from "./_components/acquire-plan-button";
 import { env } from "../_lib/env";
 
 const SubscriptionPage = async () => {
-  const { userId } = await auth();
+  const user = await currentUser();
 
-  if (!userId) {
+  if (!user) {
     redirect("/login");
   }
+
+  let currentUserPlan = user.publicMetadata?.subscriptionPlan;
+
+  currentUserPlan = currentUserPlan
+    ? String(currentUserPlan).toLowerCase()
+    : null;
+
+  const isFreePlan = !currentUserPlan;
+  const isMonthlyPlan = currentUserPlan === "plano mensal";
+  const isYearlyPlan = currentUserPlan === "plano anual";
 
   return (
     <>
@@ -37,6 +46,13 @@ const SubscriptionPage = async () => {
             {/* Plano Grátis */}
             <Card className="relative flex flex-col overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
               <CardHeader className="space-y-3 border-b py-5">
+                {isFreePlan && (
+                  <div className="mx-auto flex w-fit items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    <CheckCircleIcon className="size-3.5" />
+                    Plano atual
+                  </div>
+                )}
+
                 <div className="space-y-1.5 text-center">
                   <h2 className="text-2xl font-semibold">Plano Grátis</h2>
 
@@ -96,24 +112,39 @@ const SubscriptionPage = async () => {
                   </div>
                 </div>
 
-                <Button
-                  variant="outline"
-                  className="h-11 w-full rounded-full font-semibold"
-                >
-                  Plano atual
-                </Button>
+                <AcquirePlanButton
+                  title="Adquirir plano"
+                  buttonType={!currentUserPlan ? "manage" : "downgrade"}
+                />
               </CardContent>
             </Card>
 
             {/* Premium Mensal */}
-            <Card className="relative flex flex-col overflow-hidden rounded-2xl border-2 border-primary shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <Card
+              className={`relative flex flex-col overflow-hidden rounded-2xl border-2 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+                isMonthlyPlan ? "border-primary" : "border-border"
+              }`}
+            >
               {/* Badge */}
-              <div className="absolute right-4 top-4 z-10 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-                Mais popular
-              </div>
+              {!isMonthlyPlan && (
+                <div className="absolute right-4 top-4 z-10 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                  Mais popular
+                </div>
+              )}
 
               <CardHeader className="space-y-3 border-b bg-primary/[0.03] py-5">
-                <div className="space-y-1.5 pr-28 text-center">
+                {isMonthlyPlan && (
+                  <div className="mx-auto flex w-fit items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    <CheckCircleIcon className="size-3.5" />
+                    Plano atual
+                  </div>
+                )}
+
+                <div
+                  className={`space-y-1.5 text-center ${
+                    !isMonthlyPlan ? "pr-28" : ""
+                  }`}
+                >
                   <h2 className="text-2xl font-semibold">Premium Mensal</h2>
 
                   <p className="text-sm text-muted-foreground">
@@ -172,19 +203,43 @@ const SubscriptionPage = async () => {
                 <AcquirePlanButton
                   title="Adquirir plano mensal"
                   priceId={env.STRIPE_PREMIUM_PRICE_MONTHLY_ID}
+                  buttonType={
+                    !currentUserPlan
+                      ? "upgrade"
+                      : currentUserPlan === "plano mensal"
+                        ? "manage"
+                        : "downgrade"
+                  }
                 />
               </CardContent>
             </Card>
 
             {/* Premium Anual */}
-            <Card className="relative flex flex-col overflow-hidden rounded-2xl border-2 border-primary shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-              {/* Badge */}
-              <div className="absolute right-4 top-4 z-10 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-                15% OFF
-              </div>
-
+            <Card
+              className={`relative flex flex-col overflow-hidden rounded-2xl border-2 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+                isYearlyPlan ? "border-primary" : "border-border"
+              }`}
+            >
               <CardHeader className="space-y-3 border-b bg-primary/[0.03] py-5">
-                <div className="space-y-1.5 pr-20 text-center">
+                {/* Badge */}
+                {!isYearlyPlan && (
+                  <div className="absolute right-4 top-4 z-10 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                    15% OFF
+                  </div>
+                )}
+
+                {isYearlyPlan && (
+                  <div className="mx-auto flex w-fit items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    <CheckCircleIcon className="size-3.5" />
+                    Plano atual
+                  </div>
+                )}
+
+                <div
+                  className={`space-y-1.5 text-center ${
+                    !isYearlyPlan ? "pr-20" : ""
+                  }`}
+                >
                   <h2 className="text-2xl font-semibold">Premium Anual</h2>
 
                   <p className="text-sm text-muted-foreground">
@@ -263,6 +318,13 @@ const SubscriptionPage = async () => {
                 <AcquirePlanButton
                   title="Adquirir plano anual"
                   priceId={env.STRIPE_PREMIUM_PRICE_YEARLY_ID}
+                  buttonType={
+                    !currentUserPlan || currentUserPlan === "plano mensal"
+                      ? "upgrade"
+                      : currentUserPlan === "plano anual"
+                        ? "manage"
+                        : "downgrade"
+                  }
                 />
               </CardContent>
             </Card>
