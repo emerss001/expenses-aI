@@ -9,7 +9,7 @@ const Navbar = () => {
   const pathName = usePathname();
 
   return (
-    <nav className="flex justify-between border-b border-solid px-8 py-4">
+    <nav suppressHydrationWarning className="flex justify-between border-b border-solid px-8 py-4">
       <div className="flex items-center gap-10">
         <Image src="/logo.svg" alt="Expense Ai" width={173} height={39} />
         <Link
