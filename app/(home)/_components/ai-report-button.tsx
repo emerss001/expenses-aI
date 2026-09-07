@@ -1,5 +1,6 @@
 "use client";
 
+import DialogLimitPlan from "@/app/_components/dialog-limit-plan";
 import { Button } from "@/app/_components/ui/button";
 import {
   Dialog,
@@ -18,9 +19,10 @@ import Markdown from "react-markdown";
 
 interface AiReportButtonProps {
   month: string;
+  hasPremiumPlan: boolean;
 }
 
-const AiReportButton = ({ month }: AiReportButtonProps) => {
+const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
   const [report, setReport] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -61,52 +63,67 @@ const AiReportButton = ({ month }: AiReportButtonProps) => {
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          Relatório IA
-          <BotIcon className="ml-2 h-4 w-4" />
-        </Button>
-      </DialogTrigger>
+    <>
+      {!hasPremiumPlan ? (
+        <DialogLimitPlan
+          trigger={
+            <Button variant="outline">
+              Relatório IA
+              <BotIcon className="ml-2 h-4 w-4" />
+            </Button>
+          }
+          tittle="Relatório IA indisponível"
+          description="Para gerar relatórios com inteligência artificial, você precisa adquirir um plano premium. Clique em Continuar para ser redirecionado à página de planos."
+        />
+      ) : (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">
+              Relatório IA
+              <BotIcon className="ml-2 h-4 w-4" />
+            </Button>
+          </DialogTrigger>
 
-      {/* Ajustei o max-w para dar mais respiro ao texto */}
-      <DialogContent className="max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Relatório IA</DialogTitle>
-          <DialogDescription>
-            Use inteligência artificial para gerar um relatório com insights
-            sobre as suas finanças.
-          </DialogDescription>
-        </DialogHeader>
+          {/* Ajustei o max-w para dar mais respiro ao texto */}
+          <DialogContent className="max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Relatório IA</DialogTitle>
+              <DialogDescription>
+                Use inteligência artificial para gerar um relatório com insights
+                sobre as suas finanças.
+              </DialogDescription>
+            </DialogHeader>
 
-        <ScrollArea className="max-h-[450px]">
-          <div className="prose prose-sm sm:prose-base dark:prose-invert prose-headings:text-white prose-strong:text-white max-w-none pb-4 pr-4 text-muted-foreground">
-            {report ? (
-              <Markdown>{report}</Markdown>
-            ) : (
-              <div className="flex h-[200px] items-center justify-center text-sm text-muted-foreground/50">
-                {isLoading
-                  ? "Analisando suas finanças..."
-                  : "Clique em 'Gerar Relatório' para começar."}
+            <ScrollArea className="max-h-[450px]">
+              <div className="prose prose-sm sm:prose-base dark:prose-invert prose-headings:text-white prose-strong:text-white max-w-none pb-4 pr-4 text-muted-foreground">
+                {report ? (
+                  <Markdown>{report}</Markdown>
+                ) : (
+                  <div className="flex h-[200px] items-center justify-center text-sm text-muted-foreground/50">
+                    {isLoading
+                      ? "Analisando suas finanças..."
+                      : "Clique em 'Gerar Relatório' para começar."}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </ScrollArea>
+            </ScrollArea>
 
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="ghost">Fechar</Button>
-          </DialogClose>
-          <Button onClick={handleGenerateReportClick} disabled={isLoading}>
-            {isLoading ? (
-              <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              "Gerar Relatório"
-            )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="ghost">Fechar</Button>
+              </DialogClose>
+              <Button onClick={handleGenerateReportClick} disabled={isLoading}>
+                {isLoading ? (
+                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "Gerar Relatório"
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 };
 
