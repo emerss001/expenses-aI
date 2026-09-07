@@ -4,6 +4,8 @@ import Navbar from "../_components/navbar";
 import { Card, CardContent, CardHeader } from "../_components/ui/card";
 import { CheckIcon, XIcon } from "lucide-react";
 import { Button } from "../_components/ui/button";
+import AcquirePlanButton from "./_components/acquire-plan-button";
+import { env } from "../_lib/env";
 
 const SubscriptionPage = async () => {
   const { userId } = await auth();
@@ -167,9 +169,10 @@ const SubscriptionPage = async () => {
                   </div>
                 </div>
 
-                <Button className="h-11 w-full rounded-full font-semibold shadow-sm">
-                  Adquirir plano
-                </Button>
+                <AcquirePlanButton
+                  title="Adquirir plano mensal"
+                  priceId={env.STRIPE_PREMIUM_PRICE_MONTHLY_ID}
+                />
               </CardContent>
             </Card>
 
@@ -257,9 +260,10 @@ const SubscriptionPage = async () => {
                   </div>
                 </div>
 
-                <Button className="h-11 w-full rounded-full font-semibold shadow-sm">
-                  Adquirir plano anual
-                </Button>
+                <AcquirePlanButton
+                  title="Adquirir plano anual"
+                  priceId={env.STRIPE_PREMIUM_PRICE_YEARLY_ID}
+                />
               </CardContent>
             </Card>
           </div>

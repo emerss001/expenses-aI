@@ -5,7 +5,20 @@ const envSchema = z.object({
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z
     .string()
     .min(1, "A chave pública do Clerk é obrigatória"),
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z
+    .string()
+    .min(1, "A chave pública do Stripe é obrigatória"),
+
   CLERK_SECRET_KEY: z.string().min(1, "A chave secreta do Clerk é obrigatória"),
+  STRIPE_SECRET_KEY: z
+    .string()
+    .min(1, "A chave secreta do Stripe é obrigatória"),
+  STRIPE_PREMIUM_PRICE_MONTHLY_ID: z
+    .string()
+    .min(1, "O ID do preço premium mensal do Stripe é obrigatório"),
+  STRIPE_PREMIUM_PRICE_YEARLY_ID: z
+    .string()
+    .min(1, "O ID do preço premium anual do Stripe é obrigatório"),
 });
 
 const _env = envSchema.safeParse({
@@ -13,6 +26,11 @@ const _env = envSchema.safeParse({
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
   CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+  STRIPE_PREMIUM_PRICE_MONTHLY_ID: process.env.STRIPE_PREMIUM_PRICE_MONTHLY_ID,
+  STRIPE_PREMIUM_PRICE_YEARLY_ID: process.env.STRIPE_PREMIUM_PRICE_YEARLY_ID,
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
 });
 
 if (!_env.success) {
