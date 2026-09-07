@@ -25,6 +25,7 @@ const envSchema = z.object({
   STRIPE_WEBHOOK_SECRET: z
     .string()
     .min(1, "O segredo do webhook do Stripe é obrigatório"),
+  GEMINI_API_KEY: z.string().min(1, "A chave da API do Gemini é obrigatória"),
 });
 
 const _env = envSchema.safeParse({
@@ -40,6 +41,7 @@ const _env = envSchema.safeParse({
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
   NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL:
     process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL,
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
 });
 
 if (!_env.success) {
