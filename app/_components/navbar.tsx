@@ -9,7 +9,10 @@ const Navbar = () => {
   const pathName = usePathname();
 
   return (
-    <nav suppressHydrationWarning className="flex justify-between border-b border-solid px-8 py-4">
+    <nav
+      suppressHydrationWarning
+      className="flex justify-between border-b border-solid px-8 py-4"
+    >
       <div className="flex items-center gap-10">
         <Image src="/logo.svg" alt="Expense Ai" width={173} height={39} />
         <Link
@@ -32,7 +35,16 @@ const Navbar = () => {
         >
           Transações
         </Link>
-        <Link href="">Assinatura</Link>
+        <Link
+          href="/subscription"
+          className={
+            pathName === "/subscription"
+              ? "font-bold text-primary"
+              : "text-muted-foreground"
+          }
+        >
+          Assinatura
+        </Link>
       </div>
 
       <UserButton showName />
