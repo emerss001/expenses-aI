@@ -9,6 +9,7 @@ import {
 } from "@prisma/client";
 import { AddTransactionSchema } from "./schema";
 import { revalidatePath } from "next/cache";
+import { canUserAddTransaction } from "@/app/_data/can-user-add-transaction";
 
 interface AddTransactionParams {
   id?: string;
@@ -45,6 +46,12 @@ export const upsetTransaction = async (params: AddTransactionParams) => {
       throw new Error("Transaction not found");
     }
   } else {
+    // a tela ja troca o botao quando o limite estoura, mas a regra precisa
+    // valer aqui tambem: a action e chamavel diretamente
+    if (!(await canUserAddTransaction())) {
+      throw new Error("Limite de transacoes do plano gratis atingido");
+    }
+
     await db.transaction.create({
       data: { ...data, userId },
     });
