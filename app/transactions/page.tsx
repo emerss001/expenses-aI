@@ -6,6 +6,7 @@ import Navbar from "../_components/navbar";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { canUserAddTransaction } from "../_data/can-user-add-transaction";
+import TransactionCard from "./_components/transaction-card";
 
 const TransactionsPage = async () => {
   const { userId } = await auth();
@@ -34,7 +35,22 @@ const TransactionsPage = async () => {
           <AddTransactionButton userCanAddTransaction={userCanAddTransaction} />
         </div>
 
-        <DataTable columns={transactionsColumns} data={transactions} />
+        {/* Mobile: lista em cards. Desktop: tabela completa */}
+        <div className="space-y-3 md:hidden">
+          {transactions.length > 0 ? (
+            transactions.map((transaction) => (
+              <TransactionCard key={transaction.id} transaction={transaction} />
+            ))
+          ) : (
+            <p className="rounded-md border p-8 text-center text-sm text-muted-foreground">
+              Nenhum resultado encontrado.
+            </p>
+          )}
+        </div>
+
+        <div className="hidden md:block">
+          <DataTable columns={transactionsColumns} data={transactions} />
+        </div>
       </div>
     </>
   );

@@ -1,7 +1,10 @@
 import { Button } from "@/app/_components/ui/button";
 import { CardContent, CardHeader, CardTitle } from "@/app/_components/ui/card";
 import { ScrollArea } from "@/app/_components/ui/scroll-area";
-import { TRANSACTION_PAYMENT_METHOD_ICONS } from "@/app/_constants/transactions";
+import {
+  TRANSACTION_PAYMENT_METHOD_ICONS,
+  TRANSACTION_PAYMENT_METHOD_LABELS,
+} from "@/app/_constants/transactions";
 import { formatCurrency } from "@/app/_utils/currency";
 import { Transaction, TransactionType } from "@prisma/client";
 import Image from "next/image";
@@ -68,7 +71,11 @@ const LastTransactions = ({ lastTransactions }: LastTransactionsProps) => {
                     }
                     height={20}
                     width={20}
-                    alt="PIX"
+                    alt={
+                      TRANSACTION_PAYMENT_METHOD_LABELS[
+                        transaction.paymentMethod
+                      ]
+                    }
                   />
                 </div>
                 <div className="min-w-0">
