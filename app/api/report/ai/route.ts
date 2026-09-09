@@ -4,6 +4,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { GoogleGenAI } from "@google/genai";
 import { generateAiReportSchema } from "./schema";
 import { parseDashboardPeriod } from "@/app/_utils/dashboard-period";
+import { hasPaidPlan } from "@/app/_utils/subscription-plan";
 
 export async function POST(request: Request) {
   const { userId } = await auth();
@@ -31,9 +32,8 @@ export async function POST(request: Request) {
 
   const client = await clerkClient();
   const user = await client.users.getUser(userId);
-  const subscriptionPlan = user.publicMetadata?.subscriptionPlan;
 
-  if (!subscriptionPlan) {
+  if (!hasPaidPlan(user.publicMetadata)) {
     return new Response("Usuário não possui plano premium", { status: 403 });
   }
 

@@ -7,6 +7,10 @@ import { getCurrentMonthTransactions } from "../_data/get-current-month-transact
 import { Card, CardContent, CardHeader } from "../_components/ui/card";
 import { DollarSignIcon } from "lucide-react";
 import AcquirePlanButton from "./_components/acquire-plan-button";
+import {
+  SUBSCRIPTION_PLANS,
+  getSubscriptionPlan,
+} from "../_utils/subscription-plan";
 
 const SubscriptionPage = async () => {
   const user = await currentUser();
@@ -17,15 +21,12 @@ const SubscriptionPage = async () => {
 
   const currentMonthTransactions = await getCurrentMonthTransactions();
 
-  let currentUserPlan = user.publicMetadata?.subscriptionPlan;
-  currentUserPlan = currentUserPlan
-    ? String(currentUserPlan).toLowerCase()
-    : null;
+  const currentUserPlan = getSubscriptionPlan(user.publicMetadata);
 
   const isFreePlan = !currentUserPlan;
-  const isMonthlyPlan = currentUserPlan === "plano mensal";
-  const isYearlyPlan = currentUserPlan === "plano anual";
-  const testPlan = currentUserPlan === "plano teste";
+  const isMonthlyPlan = currentUserPlan === SUBSCRIPTION_PLANS.MONTHLY;
+  const isYearlyPlan = currentUserPlan === SUBSCRIPTION_PLANS.YEARLY;
+  const testPlan = currentUserPlan === SUBSCRIPTION_PLANS.TEST;
 
   return (
     <>
@@ -71,7 +72,7 @@ const SubscriptionPage = async () => {
               ]}
               button={{
                 title: "Adquirir plano",
-                buttonType: !currentUserPlan ? "manage" : "downgrade",
+                buttonType: isFreePlan ? "manage" : "downgrade",
               }}
             />
 
@@ -97,9 +98,9 @@ const SubscriptionPage = async () => {
               button={{
                 title: "Adquirir plano mensal",
                 priceId: env.STRIPE_PREMIUM_PRICE_MONTHLY_ID,
-                buttonType: !currentUserPlan
+                buttonType: isFreePlan
                   ? "upgrade"
-                  : currentUserPlan === "plano mensal"
+                  : isMonthlyPlan
                     ? "manage"
                     : "downgrade",
               }}
@@ -135,9 +136,9 @@ const SubscriptionPage = async () => {
                 title: "Adquirir plano anual",
                 priceId: env.STRIPE_PREMIUM_PRICE_YEARLY_ID,
                 buttonType:
-                  !currentUserPlan || currentUserPlan === "plano mensal"
+                  isFreePlan || isMonthlyPlan
                     ? "upgrade"
-                    : currentUserPlan === "plano anual"
+                    : isYearlyPlan
                       ? "manage"
                       : "downgrade",
               }}

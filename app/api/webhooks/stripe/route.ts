@@ -2,6 +2,7 @@ import { env } from "@/app/_lib/env";
 import { clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { SUBSCRIPTION_PLANS } from "@/app/_utils/subscription-plan";
 
 export const POST = async (request: Request) => {
   const signature = request.headers.get("stripe-signature");
@@ -50,11 +51,11 @@ export const POST = async (request: Request) => {
       // Define qual plano foi assinado baseado no priceId
       let plan = null;
       if (priceId === env.STRIPE_PREMIUM_PRICE_MONTHLY_ID) {
-        plan = "Plano Mensal";
+        plan = SUBSCRIPTION_PLANS.MONTHLY;
       } else if (priceId === env.STRIPE_PREMIUM_PRICE_YEARLY_ID) {
-        plan = "Plano Anual";
+        plan = SUBSCRIPTION_PLANS.YEARLY;
       } else if (priceId === env.STRIPE_TEST_PRICE_ID) {
-        plan = "Plano Teste";
+        plan = SUBSCRIPTION_PLANS.TEST;
       }
 
       const client = await clerkClient();

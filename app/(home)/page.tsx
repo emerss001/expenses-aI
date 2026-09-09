@@ -16,6 +16,7 @@ import {
   parseDashboardPeriod,
 } from "../_utils/dashboard-period";
 import { format, subDays } from "date-fns";
+import { hasPaidPlan } from "../_utils/subscription-plan";
 
 interface HomeProps {
   searchParams: PeriodSearchParams;
@@ -51,9 +52,7 @@ const Home = async ({ searchParams }: HomeProps) => {
               key={`${format(period.startDate, DAY_FORMAT)}-${format(period.endDate, DAY_FORMAT)}`}
               from={format(period.startDate, DAY_FORMAT)}
               to={format(subDays(period.endDate, 1), DAY_FORMAT)}
-              // quem nunca assinou nao tem a chave no metadata: ausente e diferente
-              // de nulo, entao a checagem precisa ser por valor presente
-              hasPremiumPlan={Boolean(user.publicMetadata?.subscriptionPlan)}
+              hasPremiumPlan={hasPaidPlan(user.publicMetadata)}
             />
             <PeriodSelect years={years} />
           </div>

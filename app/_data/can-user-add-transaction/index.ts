@@ -1,5 +1,6 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { getCurrentMonthTransactions } from "../get-current-month-transactions";
+import { hasPaidPlan } from "@/app/_utils/subscription-plan";
 
 export const canUserAddTransaction = async () => {
   const { userId } = await auth();
@@ -8,7 +9,7 @@ export const canUserAddTransaction = async () => {
   }
 
   const user = await clerkClient().users.getUser(userId);
-  if (user.publicMetadata.subscriptionPlan) {
+  if (hasPaidPlan(user.publicMetadata)) {
     return true;
   }
 
