@@ -28,13 +28,29 @@ export const upsetTransaction = async (params: AddTransactionParams) => {
     throw new Error("User not authenticated");
   }
 
-  await db.transaction.upsert({
-    update: { ...params, userId },
-    create: { ...params, userId },
+  const { id, ...data } = params;
+
+  if (!id) {
+    await db.transaction.create({
+      data: { ...data, userId },
+    });
+    revalidatePath("/transactions");
+    return;
+  }
+
+  // updateMany filtrando por userId impede editar transação de outro usuário;
+  // o userId também não é regravado, então a transação não muda de dono
+  const { count } = await db.transaction.updateMany({
     where: {
-      id: params?.id ?? "",
+      id,
+      userId,
     },
+    data,
   });
+
+  if (count === 0) {
+    throw new Error("Transaction not found");
+  }
 
   revalidatePath("/transactions");
 };
