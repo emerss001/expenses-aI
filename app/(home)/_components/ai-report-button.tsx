@@ -19,15 +19,23 @@ import { BotIcon, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 import Markdown from "react-markdown";
 
+/** "2026-01-31" -> "31/01/2026" */
+const formatDay = (day: string) => day.split("-").reverse().join("/");
+
 interface AiReportButtonProps {
-  month: string;
+  /** Primeiro dia do período em exibição, no formato yyyy-MM-dd. */
+  from: string;
+  /** Último dia do período em exibição (inclusivo), no formato yyyy-MM-dd. */
+  to: string;
   hasPremiumPlan: boolean;
 }
 
-const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
+const AiReportButton = ({ from, to, hasPremiumPlan }: AiReportButtonProps) => {
   const [report, setReport] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const periodLabel = `${formatDay(from)} a ${formatDay(to)}`;
 
   const messageForStatus = (status: number) => {
     if (status === 401) {
@@ -47,7 +55,7 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
 
       const response = await fetch("/api/report/ai", {
         method: "POST",
-        body: JSON.stringify({ month }),
+        body: JSON.stringify({ from, to }),
         headers: { "Content-Type": "application/json" },
       });
 
@@ -104,8 +112,7 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
             <DialogHeader>
               <DialogTitle>Relatório IA</DialogTitle>
               <DialogDescription>
-                Use inteligência artificial para gerar um relatório com insights
-                sobre as suas finanças.
+                Insights sobre as suas finanças no período de {periodLabel}.
               </DialogDescription>
             </DialogHeader>
 

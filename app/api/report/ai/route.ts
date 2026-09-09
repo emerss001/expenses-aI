@@ -3,11 +3,11 @@ import { db } from "@/app/_lib/prisma";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { GoogleGenAI } from "@google/genai";
 import { generateAiReportSchema } from "./schema";
-import { getMonthDateRange } from "@/app/_utils/month-range";
+import { parseDashboardPeriod } from "@/app/_utils/dashboard-period";
 
 export async function POST(request: Request) {
-  const { month } = await request.json();
-  generateAiReportSchema.parse({ month });
+  const { from, to } = await request.json();
+  generateAiReportSchema.parse({ from, to });
 
   const { userId } = await auth();
 
@@ -23,7 +23,12 @@ export async function POST(request: Request) {
     return new Response("Usuário não possui plano premium", { status: 403 });
   }
 
-  const { startDate, endDate } = getMonthDateRange(month);
+  const period = parseDashboardPeriod({ from, to });
+  if (!period) {
+    return new Response("Período inválido", { status: 400 });
+  }
+
+  const { startDate, endDate } = period;
 
   const transactions = await db.transaction.findMany({
     where: {
@@ -36,7 +41,7 @@ export async function POST(request: Request) {
   });
 
   if (transactions.length === 0) {
-    return new Response("Não há transações suficientes neste mês.");
+    return new Response("Não há transações neste período.");
   }
 
   const content = `Você é um consultor financeiro pessoal inteligente, objetivo e direto ao ponto. 

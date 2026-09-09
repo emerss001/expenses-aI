@@ -2,59 +2,64 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Navbar from "../_components/navbar";
 import SummaryCards from "./_components/summary-cards";
-import TimeSelect from "./_components/time-select";
-import { isMatch } from "date-fns";
+import PeriodSelect from "./_components/period-select";
 import TransactionsPieChart from "./_components/transactions-pie-chart";
 import { getDashboard } from "../_data/get-dashboard";
 import ExpensesPerCategory from "./_components/expenses-per-category";
 import LastTransactions from "./_components/last-transactions";
 import { canUserAddTransaction } from "../_data/can-user-add-transaction";
+import { getTransactionYears } from "../_data/get-transaction-years";
 import AiReportButton from "./_components/ai-report-button";
+import {
+  DAY_FORMAT,
+  PeriodSearchParams,
+  parseDashboardPeriod,
+} from "../_utils/dashboard-period";
+import { format, subDays } from "date-fns";
 
 interface HomeProps {
-  searchParams: {
-    month: string;
-  };
+  searchParams: PeriodSearchParams;
 }
 
-const Home = async ({ searchParams: { month } }: HomeProps) => {
+const Home = async ({ searchParams }: HomeProps) => {
   const { userId } = await auth();
 
   if (!userId) {
     redirect("/login");
   }
 
-  const monthIsValid = !month || !isMatch(month, "MM");
-  if (monthIsValid) {
-    const currentMonth = (new Date().getMonth() + 1)
-      .toString()
-      .padStart(2, "0");
-    redirect(`/?month=${currentMonth}`);
+  const period = parseDashboardPeriod(searchParams);
+  if (!period) {
+    const today = new Date();
+    redirect(`/?month=${format(today, "MM")}&year=${format(today, "yyyy")}`);
   }
 
-  const dashboard = await getDashboard(month);
+  const dashboard = await getDashboard(period);
   const userCanAddTransaction = await canUserAddTransaction();
+  const years = await getTransactionYears();
   const user = await clerkClient.users.getUser(userId);
 
   return (
     <>
       <Navbar />
       <div className="flex flex-col space-y-6 p-4 md:p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <AiReportButton
-              month={month}
+              // remonta ao trocar de período, para não exibir relatório de outro intervalo
+              key={`${format(period.startDate, DAY_FORMAT)}-${format(period.endDate, DAY_FORMAT)}`}
+              from={format(period.startDate, DAY_FORMAT)}
+              to={format(subDays(period.endDate, 1), DAY_FORMAT)}
               hasPremiumPlan={user.publicMetadata?.subscriptionPlan !== null}
             />
-            <TimeSelect />
+            <PeriodSelect years={years} />
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr,1fr]">
           <div className="flex min-w-0 flex-col gap-6">
             <SummaryCards
-              month={month}
               {...dashboard}
               userCanAddTransaction={userCanAddTransaction}
             />

@@ -7,7 +7,6 @@ import {
 import SummaryCard from "./summary-card";
 
 interface SummaryCardsProps {
-  month: string;
   balance: number;
   investmentsTotal: number;
   depositsTotal: number;
@@ -16,7 +15,6 @@ interface SummaryCardsProps {
 }
 
 const SummaryCards = async ({
-  // month,
   balance,
   depositsTotal,
   expensesTotal,

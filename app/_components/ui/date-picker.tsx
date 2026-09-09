@@ -13,9 +13,14 @@ import { SelectSingleEventHandler } from "react-day-picker";
 interface DatePickerProps {
   value?: Date;
   onChange?: SelectSingleEventHandler;
+  placeholder?: string;
 }
 
-export const DatePicker = ({ onChange, value }: DatePickerProps) => {
+export const DatePicker = ({
+  onChange,
+  value,
+  placeholder = "Selecione uma data",
+}: DatePickerProps) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -34,7 +39,7 @@ export const DatePicker = ({ onChange, value }: DatePickerProps) => {
               year: "numeric",
             })
           ) : (
-            <span>Selecione uma data</span>
+            <span>{placeholder}</span>
           )}
         </Button>
       </PopoverTrigger>
