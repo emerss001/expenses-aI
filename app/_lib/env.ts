@@ -2,6 +2,8 @@ import { z } from "zod";
 
 const envSchema = z.object({
   DATABASE_URL: z.string().url("A URL do banco de dados deve ser válida"),
+  // URL publica da aplicacao; usada nos redirecionamentos de volta do Stripe
+  APP_URL: z.string().url("A URL da aplicação deve ser válida"),
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z
     .string()
     .min(1, "A chave pública do Clerk é obrigatória"),

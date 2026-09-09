@@ -27,7 +27,7 @@ export const createStripePortal = async () => {
   // Cria a sessão de acesso ao portal do cliente
   const portalSession = await stripe.billingPortal.sessions.create({
     customer: stripeCustomerId,
-    return_url: "http://localhost:3000", // Para onde o usuário volta ao sair do portal
+    return_url: env.APP_URL, // Para onde o usuário volta ao sair do portal
     configuration: env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL,
   });
 
