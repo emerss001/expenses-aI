@@ -6,26 +6,35 @@ import { generateAiReportSchema } from "./schema";
 import { parseDashboardPeriod } from "@/app/_utils/dashboard-period";
 
 export async function POST(request: Request) {
-  const { from, to } = await request.json();
-  generateAiReportSchema.parse({ from, to });
-
   const { userId } = await auth();
 
   if (!userId) {
     return new Response("Usuário não autenticado", { status: 401 });
   }
 
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return new Response("Corpo da requisição inválido", { status: 400 });
+  }
+
+  const parsedBody = generateAiReportSchema.safeParse(body);
+  if (!parsedBody.success) {
+    return new Response("Corpo da requisição inválido", { status: 400 });
+  }
+
+  const period = parseDashboardPeriod(parsedBody.data);
+  if (!period) {
+    return new Response("Período inválido", { status: 400 });
+  }
+
   const client = await clerkClient();
   const user = await client.users.getUser(userId);
   const subscriptionPlan = user.publicMetadata?.subscriptionPlan;
 
-  if (!subscriptionPlan || subscriptionPlan === "free") {
+  if (!subscriptionPlan) {
     return new Response("Usuário não possui plano premium", { status: 403 });
-  }
-
-  const period = parseDashboardPeriod({ from, to });
-  if (!period) {
-    return new Response("Período inválido", { status: 400 });
   }
 
   const { startDate, endDate } = period;
