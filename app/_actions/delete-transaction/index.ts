@@ -24,4 +24,5 @@ export const deleteTransaction = async (transactionId: string) => {
 
   revalidatePath("/transactions");
   revalidatePath("/");
+  revalidatePath("/subscription");
 };

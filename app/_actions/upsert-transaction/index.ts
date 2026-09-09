@@ -52,4 +52,5 @@ export const upsetTransaction = async (params: AddTransactionParams) => {
 
   revalidatePath("/transactions");
   revalidatePath("/");
+  revalidatePath("/subscription");
 };
