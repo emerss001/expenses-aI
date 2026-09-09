@@ -1,4 +1,3 @@
-import { Button } from "@/app/_components/ui/button";
 import {
   TRANSACTION_CATEGORY_LABELS,
   TRANSACTION_PAYMENT_METHOD_ICONS,
@@ -6,8 +5,8 @@ import {
 } from "@/app/_constants/transactions";
 import { formatCurrency } from "@/app/_utils/currency";
 import { Transaction, TransactionType } from "@prisma/client";
-import { Trash2Icon } from "lucide-react";
 import Image from "next/image";
+import DeleteTransactionButton from "./delete-transaction-button";
 import EditTransactionButton from "./edit-transaction-button";
 import TransactionTypeBadge from "./type-badge";
 
@@ -65,9 +64,10 @@ const TransactionCard = ({ transaction }: TransactionCardProps) => {
 
         <div className="ml-auto flex shrink-0 items-center">
           <EditTransactionButton transaction={transaction} />
-          <Button variant="ghost" className="text-muted-foreground" size="icon">
-            <Trash2Icon />
-          </Button>
+          <DeleteTransactionButton
+            transactionId={transaction.id}
+            transactionName={transaction.name}
+          />
         </div>
       </div>
     </div>
