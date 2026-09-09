@@ -37,7 +37,7 @@ const TimeSelect = () => {
       onValueChange={(value) => handleMonthChange(value)}
       value={month || undefined}
     >
-      <SelectTrigger className="w-40 text-lg">
+      <SelectTrigger className="w-full text-base sm:w-40 sm:text-lg">
         <SelectValue placeholder="Mês" />
       </SelectTrigger>
       <SelectContent>

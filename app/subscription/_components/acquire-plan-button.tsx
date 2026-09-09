@@ -57,7 +57,7 @@ const AcquirePlanButton = ({ priceId, buttonType }: AcquirePlanButtonProps) => {
     return (
       <Button
         variant="outline"
-        className="h-11 w-full rounded-full font-semibold text-primary"
+        className="h-auto min-h-11 w-full whitespace-normal rounded-full font-semibold text-primary"
         onClick={handleManageClick}
         disabled={isLoading}
       >
@@ -70,7 +70,7 @@ const AcquirePlanButton = ({ priceId, buttonType }: AcquirePlanButtonProps) => {
     return (
       <Button
         variant="outline"
-        className="h-11 w-full rounded-full font-semibold text-red-300"
+        className="h-auto min-h-11 w-full whitespace-normal rounded-full font-semibold text-red-300"
       >
         Fazer downgrade para este plano
       </Button>
@@ -79,7 +79,7 @@ const AcquirePlanButton = ({ priceId, buttonType }: AcquirePlanButtonProps) => {
 
   return (
     <Button
-      className="h-11 w-full rounded-full font-semibold shadow-sm"
+      className="h-auto min-h-11 w-full whitespace-normal rounded-full font-semibold shadow-sm"
       onClick={handleAcquirePlanClick}
       disabled={isLoading}
     >

@@ -48,7 +48,7 @@ export default function PricingCard({
       )}
 
       <CardHeader
-        className={`space-y-3 border-b py-5 ${isHighlighted || highlightBadge ? "bg-primary/[0.03]" : ""}`}
+        className={`space-y-3 border-b p-4 py-5 md:p-6 md:py-5 ${isHighlighted || highlightBadge ? "bg-primary/[0.03]" : ""}`}
       >
         {isCurrentPlan && (
           <div className="mx-auto flex w-fit items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
@@ -58,7 +58,7 @@ export default function PricingCard({
         )}
 
         <div
-          className={`space-y-1.5 text-center ${highlightBadge ? "pr-20" : ""}`}
+          className={`space-y-1.5 text-center ${highlightBadge ? "pr-16 sm:pr-20" : ""}`}
         >
           <h2 className="text-2xl font-semibold">{title}</h2>
           <p className="text-sm text-muted-foreground">{description}</p>
@@ -70,7 +70,7 @@ export default function PricingCard({
               R$
             </span>
             <span
-              className={`text-5xl font-bold tracking-tight ${isHighlighted ? "text-primary" : ""}`}
+              className={`text-4xl font-bold tracking-tight sm:text-5xl ${isHighlighted ? "text-primary" : ""}`}
             >
               {price}
             </span>
@@ -91,12 +91,12 @@ export default function PricingCard({
         </div>
       </CardHeader>
 
-      <CardContent className="flex flex-1 flex-col justify-between gap-5 py-5">
+      <CardContent className="flex flex-1 flex-col justify-between gap-5 p-4 py-5 md:p-6 md:py-5">
         <div className="space-y-4">
           {features.map((feature, index) => (
             <div key={index} className="flex items-start gap-3">
               <div
-                className={`mt-0.5 rounded-full p-1 ${feature.isIncluded ? "bg-primary/10" : "bg-muted"}`}
+                className={`mt-0.5 shrink-0 rounded-full p-1 ${feature.isIncluded ? "bg-primary/10" : "bg-muted"}`}
               >
                 {feature.isIncluded ? (
                   <CheckIcon className="size-4 text-primary" />
@@ -104,7 +104,7 @@ export default function PricingCard({
                   <XIcon className="size-4 text-muted-foreground" />
                 )}
               </div>
-              <div>
+              <div className="min-w-0">
                 <p
                   className={`font-medium ${!feature.isIncluded ? "text-muted-foreground" : ""}`}
                 >

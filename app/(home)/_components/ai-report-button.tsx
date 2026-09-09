@@ -67,7 +67,7 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
       {!hasPremiumPlan ? (
         <DialogLimitPlan
           trigger={
-            <Button variant="outline">
+            <Button variant="outline" className="w-full sm:w-auto">
               Relatório IA
               <BotIcon className="ml-2 h-4 w-4" />
             </Button>
@@ -78,7 +78,7 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
       ) : (
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline">
+            <Button variant="outline" className="w-full sm:w-auto">
               Relatório IA
               <BotIcon className="ml-2 h-4 w-4" />
             </Button>
@@ -94,8 +94,8 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
               </DialogDescription>
             </DialogHeader>
 
-            <ScrollArea className="max-h-[450px]">
-              <div className="prose prose-sm sm:prose-base dark:prose-invert prose-headings:text-white prose-strong:text-white max-w-none pb-4 pr-4 text-muted-foreground">
+            <ScrollArea className="max-h-[55dvh] sm:max-h-[450px]">
+              <div className="prose prose-sm max-w-none pb-4 pr-4 text-muted-foreground dark:prose-invert sm:prose-base prose-headings:text-white prose-strong:text-white">
                 {report ? (
                   <Markdown>{report}</Markdown>
                 ) : (
@@ -110,9 +110,15 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="ghost">Fechar</Button>
+                <Button variant="ghost" className="w-full sm:w-auto">
+                  Fechar
+                </Button>
               </DialogClose>
-              <Button onClick={handleGenerateReportClick} disabled={isLoading}>
+              <Button
+                className="w-full sm:w-auto"
+                onClick={handleGenerateReportClick}
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                 ) : (

@@ -38,8 +38,10 @@ const LastTransactions = ({ lastTransactions }: LastTransactionsProps) => {
 
   return (
     <ScrollArea className="rounded-md border">
-      <CardHeader className="flex-row items-center justify-between">
-        <CardTitle className="font-bold">Últimas Transações</CardTitle>
+      <CardHeader className="flex-row flex-wrap items-center justify-between gap-3 p-4 md:p-6">
+        <CardTitle className="text-xl font-bold md:text-2xl">
+          Últimas Transações
+        </CardTitle>
         <Button
           variant="outline"
           className="rounded-full font-bold"
@@ -49,15 +51,15 @@ const LastTransactions = ({ lastTransactions }: LastTransactionsProps) => {
           <Link href="/transactions">Ver mais</Link>
         </Button>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 p-4 pt-0 md:p-6 md:pt-0">
         {lastTransactions.length > 0 ? (
           lastTransactions.map((transaction) => (
             <div
-              className="flex items-center justify-between"
+              className="flex items-center justify-between gap-3"
               key={transaction.id}
             >
-              <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-white bg-opacity-[3%] p-3">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="shrink-0 rounded-lg bg-white bg-opacity-[3%] p-3">
                   <Image
                     src={
                       TRANSACTION_PAYMENT_METHOD_ICONS[
@@ -69,8 +71,10 @@ const LastTransactions = ({ lastTransactions }: LastTransactionsProps) => {
                     alt="PIX"
                   />
                 </div>
-                <div>
-                  <p className="text-sm font-bold">{transaction.name}</p>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold">
+                    {transaction.name}
+                  </p>
                   <p className="text-sm text-muted-foreground">
                     {new Date(transaction.date).toLocaleDateString("pt-BR", {
                       day: "2-digit",
@@ -80,7 +84,9 @@ const LastTransactions = ({ lastTransactions }: LastTransactionsProps) => {
                   </p>
                 </div>
               </div>
-              <p className={`text-sm font-bold ${getPriceColor(transaction)}`}>
+              <p
+                className={`shrink-0 whitespace-nowrap text-sm font-bold ${getPriceColor(transaction)}`}
+              >
                 {getPricePrefixes(transaction)}
                 {formatCurrency(Number(transaction.amount))}
               </p>

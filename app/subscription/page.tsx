@@ -30,11 +30,11 @@ const SubscriptionPage = async () => {
   return (
     <>
       <Navbar />
-      <main className="flex h-[calc(100dvh-4rem)] justify-center overflow-y-auto px-6">
-        <div className="no-scrollbar w-full max-w-6xl space-y-8 py-8">
+      <main className="flex justify-center px-4 md:px-6">
+        <div className="w-full max-w-6xl space-y-8 py-8">
           {/* Header */}
           <div className="mx-auto max-w-2xl space-y-2 text-center">
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
               Sua assinatura
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -44,7 +44,7 @@ const SubscriptionPage = async () => {
           </div>
 
           {/* Planos Principais */}
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <PricingCard
               title="Plano Grátis"
               description="Para começar a organizar suas finanças"
@@ -153,8 +153,8 @@ const SubscriptionPage = async () => {
             </div>
 
             <Card className="w-full border-2 border-dashed bg-muted/30 transition-all hover:bg-muted/50">
-              <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                <div className="rounded-full bg-primary/10 p-2.5">
+              <CardHeader className="flex flex-col items-start gap-4 p-4 pb-2 sm:flex-row sm:items-center md:p-6 md:pb-2">
+                <div className="shrink-0 rounded-full bg-primary/10 p-2.5">
                   <DollarSignIcon className="size-5 text-primary" />
                 </div>
                 <div className="flex-1">
@@ -164,14 +164,14 @@ const SubscriptionPage = async () => {
                     e webhooks.
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="text-left sm:text-right">
                   <span className="text-2xl font-bold">R$ 0,10</span>
                   <p className="text-xs text-muted-foreground">
                     pagamento único
                   </p>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 pt-0 md:p-6 md:pt-0">
                 <AcquirePlanButton
                   title="Testar Checkout"
                   priceId={env.STRIPE_TEST_PRICE_ID}

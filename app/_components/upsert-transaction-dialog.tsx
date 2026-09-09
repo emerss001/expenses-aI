@@ -127,7 +127,10 @@ const UpsertTransactionDialog = ({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 sm:space-y-6"
+          >
             <FormField
               control={form.control}
               name="name"
@@ -267,11 +270,20 @@ const UpsertTransactionDialog = ({
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline" type="button" disabled={isSubmitting}>
+                <Button
+                  variant="outline"
+                  type="button"
+                  className="w-full sm:w-auto"
+                  disabled={isSubmitting}
+                >
                   Cancelar
                 </Button>
               </DialogClose>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                className="w-full sm:w-auto"
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? (
                   <LoaderCircle className="animate-spin" />
                 ) : isUpdate ? (

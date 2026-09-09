@@ -22,7 +22,7 @@ const ExpensesPerCategory = ({
   const categoriesToShow = hasData ? expensesPerCategory : EMPTY_CATEGORIES;
 
   return (
-    <ScrollArea className="col-span-2 h-[450px] rounded-md border pb-6">
+    <ScrollArea className="h-[380px] w-full rounded-md border pb-6 md:col-span-2 md:h-[450px]">
       <CardHeader>
         <CardTitle className="font-bold">Gastos por Categoria</CardTitle>
       </CardHeader>
@@ -30,11 +30,15 @@ const ExpensesPerCategory = ({
       <CardContent className="space-y-6">
         {categoriesToShow.map((category) => (
           <div key={category.category} className="space-y-2">
-            <div className="flex w-full justify-between">
-              <p className={`text-sm font-bold ${!hasData ? "text-muted-foreground" : ""}`}>
+            <div className="flex w-full items-center justify-between gap-2">
+              <p
+                className={`min-w-0 truncate text-sm font-bold ${!hasData ? "text-muted-foreground" : ""}`}
+              >
                 {TRANSACTION_CATEGORY_LABELS[category.category]}
               </p>
-              <p className={`text-sm font-bold ${!hasData ? "text-muted-foreground" : ""}`}>
+              <p
+                className={`shrink-0 text-sm font-bold ${!hasData ? "text-muted-foreground" : ""}`}
+              >
                 {category.percentageOfTotal}%
               </p>
             </div>
@@ -47,4 +51,3 @@ const ExpensesPerCategory = ({
 };
 
 export default ExpensesPerCategory;
-

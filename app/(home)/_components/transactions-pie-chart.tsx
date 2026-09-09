@@ -70,14 +70,14 @@ const TransactionsPieChart = ({
   const emptyChartData = [{ type: "empty", amount: 1, fill: "#3B3B3B" }];
 
   return (
-    <Card className="flex flex-col pb-5">
+    <Card className="flex min-w-0 flex-col pb-5">
       <CardHeader>
         <CardTitle className="font-bold">Resumo das Transações</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-6 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto h-[170px] w-[170px]"
+          className="mx-auto aspect-square h-[170px] w-[170px] max-w-full"
         >
           <PieChart>
             {hasData && (

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Mulish } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -12,20 +12,26 @@ export const metadata: Metadata = {
     "A Expenses AI é uma plataforma de gestão financeira que utiliza IA para monitorar suas movimentações, e oferecer insights personalizados, facilitando o controle do seu orçamento.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body className={`${mulish.className} dark antialiased`}>
         <ClerkProvider
           appearance={{
             baseTheme: dark,
           }}
         >
-          <div className="flex min-h-full flex-col">{children}</div>
+          <div className="flex min-h-dvh flex-col">{children}</div>
         </ClerkProvider>
       </body>
     </html>
