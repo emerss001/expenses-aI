@@ -3,6 +3,7 @@ import { db } from "@/app/_lib/prisma";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { GoogleGenAI } from "@google/genai";
 import { generateAiReportSchema } from "./schema";
+import { getMonthDateRange } from "@/app/_utils/month-range";
 
 export async function POST(request: Request) {
   const { month } = await request.json();
@@ -22,17 +23,14 @@ export async function POST(request: Request) {
     return new Response("Usuário não possui plano premium", { status: 403 });
   }
 
-  const monthNumber = Number(month);
-  const currentYear = new Date().getFullYear();
-  const startDate = new Date(currentYear, monthNumber - 1, 1);
-  const endDate = new Date(currentYear, monthNumber, 0, 23, 59, 59);
+  const { startDate, endDate } = getMonthDateRange(month);
 
   const transactions = await db.transaction.findMany({
     where: {
       userId,
       date: {
         gte: startDate,
-        lte: endDate,
+        lt: endDate,
       },
     },
   });

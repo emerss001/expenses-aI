@@ -2,6 +2,7 @@ import { db } from "@/app/_lib/prisma";
 import { TransactionType } from "@prisma/client";
 import { TotalExpensePerCategory, TransactionPercentagePerType } from "./types";
 import { auth } from "@clerk/nextjs/server";
+import { getMonthDateRange } from "@/app/_utils/month-range";
 
 export const getDashboard = async (month: string) => {
   const { userId } = await auth();
@@ -9,12 +10,12 @@ export const getDashboard = async (month: string) => {
     throw new Error("Unauthorized");
   }
 
-  const currentYear = new Date().getFullYear();
+  const { startDate, endDate } = getMonthDateRange(month);
   const where = {
     userId,
     date: {
-      gte: new Date(`${currentYear}-${month}-01`),
-      lt: new Date(`${currentYear}-${month}-31`),
+      gte: startDate,
+      lt: endDate,
     },
   };
 
