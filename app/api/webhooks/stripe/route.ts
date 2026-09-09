@@ -53,6 +53,8 @@ export const POST = async (request: Request) => {
         plan = "Plano Mensal";
       } else if (priceId === env.STRIPE_PREMIUM_PRICE_YEARLY_ID) {
         plan = "Plano Anual";
+      } else if (priceId === env.STRIPE_TEST_PRICE_ID) {
+        plan = "Plano Teste";
       }
 
       const client = await clerkClient();

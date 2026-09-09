@@ -26,23 +26,12 @@ const envSchema = z.object({
     .string()
     .min(1, "O segredo do webhook do Stripe é obrigatório"),
   GEMINI_API_KEY: z.string().min(1, "A chave da API do Gemini é obrigatória"),
+  STRIPE_TEST_PRICE_ID: z
+    .string()
+    .min(1, "O ID do preço de teste do Stripe é obrigatório"),
 });
 
-const _env = envSchema.safeParse({
-  DATABASE_URL: process.env.DATABASE_URL,
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
-  CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
-  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-  STRIPE_PREMIUM_PRICE_MONTHLY_ID: process.env.STRIPE_PREMIUM_PRICE_MONTHLY_ID,
-  STRIPE_PREMIUM_PRICE_YEARLY_ID: process.env.STRIPE_PREMIUM_PRICE_YEARLY_ID,
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
-    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
-  NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL:
-    process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL,
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-});
+const _env = envSchema.safeParse(process.env);
 
 if (!_env.success) {
   console.error("❌ Variáveis de ambiente inválidas ou ausentes:");
