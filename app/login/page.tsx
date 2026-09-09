@@ -25,8 +25,8 @@ const LoginPage = async () => {
         />
         <h1 className="mb-3 text-3xl font-bold sm:text-4xl">Bem Vindo(a)</h1>
         <p className="text-muted-foreground">
-          A Finance AI é uma plataforma de gestão financeira que utiliza IA para
-          monitorar suas movimentações, e oferecer insights personalizados,
+          A Expenses AI é uma plataforma de gestão financeira que utiliza IA
+          para monitorar suas movimentações, e oferecer insights personalizados,
           facilitando o controle do seu orçamento.
         </p>
         <SignInButton>

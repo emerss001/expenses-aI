@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Expenses AI
 
-## Getting Started
+Plataforma de gestão financeira pessoal: registre receitas, despesas e investimentos, acompanhe o resumo do período e gere relatórios com inteligência artificial sobre os seus hábitos de gasto.
 
-First, run the development server:
+## Telas
+
+> Coloque os prints em `docs/screenshots/` e descomente as linhas abaixo.
+
+<!-- ![Dashboard](docs/screenshots/dashboard.png) -->
+
+<!-- ![Transações](docs/screenshots/transacoes.png) -->
+
+<!-- ![Relatório de IA](docs/screenshots/relatorio-ia.png) -->
+
+<!-- ![Assinatura](docs/screenshots/assinatura.png) -->
+
+<!-- ![Login](docs/screenshots/login.png) -->
+
+## Funcionalidades
+
+- **Dashboard** com saldo, receitas, despesas e investimentos do período, gráfico de resumo e gastos por categoria.
+- **Período flexível**: seleção por mês e ano ou intervalo personalizado, com o período preservado na URL.
+- **Transações**: cadastro, edição e exclusão, com categoria, forma de pagamento e data. Tabela no desktop e lista em cards no celular.
+- **Relatório de IA**: análise do período em exibição gerada pelo Google Gemini, em streaming.
+- **Planos e cobrança**: plano grátis limitado a 10 transações por mês; planos mensal e anual via Stripe, com portal do cliente para gerenciar a assinatura.
+
+## Stack
+
+| Camada       | Tecnologia                                |
+| ------------ | ----------------------------------------- |
+| Framework    | Next.js 14 (App Router) e React 18        |
+| Linguagem    | TypeScript                                |
+| Interface    | Tailwind CSS, shadcn/ui (Radix), Recharts |
+| Banco        | PostgreSQL com Prisma                     |
+| Autenticação | Clerk                                     |
+| Pagamentos   | Stripe                                    |
+| IA           | Google Gemini                             |
+| Testes       | Vitest                                    |
+
+## Como rodar
+
+Pré-requisitos: Node.js 20+, Docker (ou um PostgreSQL próprio) e contas no Clerk, Stripe e Google AI Studio.
 
 ```bash
+# 1. dependências
+npm install
+
+# 2. banco de dados local
+docker compose up -d
+
+# 3. variáveis de ambiente
+cp .env.example .env
+# preencha o .env com as chaves dos serviços
+
+# 4. banco: aplica as migrações e gera o client do Prisma
+npx prisma migrate dev
+
+# 5. desenvolvimento
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+A aplicação sobe em <http://localhost:3000>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Variáveis de ambiente
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Todas são obrigatórias — a aplicação não sobe sem elas, por decisão de projeto: é preferível falhar na subida a rodar com configuração pela metade. A lista completa e comentada está em [`.env.example`](.env.example).
 
-## Learn More
+Atenção ao `APP_URL`: é para onde o Stripe redireciona o cliente depois do pagamento. Em produção precisa ser o domínio real, sem barra no final.
 
-To learn more about Next.js, take a look at the following resources:
+### Webhook do Stripe
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+O plano do usuário é definido pelo webhook, não pela tela de checkout. Para testar o fluxo de assinatura localmente:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
 
-## Deploy on Vercel
+Use o segredo exibido pelo comando como `STRIPE_WEBHOOK_SECRET`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Comando              | O que faz                          |
+| -------------------- | ---------------------------------- |
+| `npm run dev`        | Sobe o ambiente de desenvolvimento |
+| `npm run build`      | Compila para produção              |
+| `npm start`          | Sobe a build de produção           |
+| `npm run lint`       | Roda o ESLint                      |
+| `npm test`           | Roda a suíte de testes             |
+| `npm run test:watch` | Roda os testes em modo observação  |
+
+## Testes
+
+A suíte cobre as regras que erram em silêncio — aquelas que não quebram tela nenhuma, só mostram número errado:
+
+- cálculo do período do dashboard (`app/_utils/dashboard-period.ts`);
+- leitura do plano de assinatura (`app/_utils/subscription-plan.ts`);
+- fórmulas do dashboard: saldo, percentual por tipo e fatia por categoria (`app/_data/get-dashboard/calculate.ts`);
+- formatação de valores em real (`app/_utils/currency.ts`).
+
+São funções puras: os testes rodam em segundos, sem banco, sem Clerk e sem Stripe.
+
+## Estrutura
+
+```
+app/
+  (home)/          dashboard e seus componentes
+  transactions/    listagem, tabela e cards de transação
+  subscription/    planos e checkout
+  login/           entrada
+  _actions/        server actions (criar, editar, excluir, Stripe)
+  _components/     componentes compartilhados e a base de UI
+  _data/           leitura de dados no banco
+  _utils/          regras puras (período, plano, moeda)
+  api/             rota do relatório de IA e webhook do Stripe
+prisma/            schema e migrações
+```
