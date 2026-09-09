@@ -24,6 +24,9 @@ model Transaction {
   created       DateTime                 @default(now())
   updatedAt     DateTime                 @updatedAt
   userId        String
+
+  // toda leitura do app filtra pelo dono e quase sempre recorta/ordena por data
+  @@index([userId, date])
 }
 
 enum TransactionType {
