@@ -30,27 +30,26 @@ export const upsetTransaction = async (params: AddTransactionParams) => {
 
   const { id, ...data } = params;
 
-  if (!id) {
+  if (id) {
+    // updateMany filtrando por userId impede editar transação de outro usuário;
+    // o userId também não é regravado, então a transação não muda de dono
+    const { count } = await db.transaction.updateMany({
+      where: {
+        id,
+        userId,
+      },
+      data,
+    });
+
+    if (count === 0) {
+      throw new Error("Transaction not found");
+    }
+  } else {
     await db.transaction.create({
       data: { ...data, userId },
     });
-    revalidatePath("/transactions");
-    return;
-  }
-
-  // updateMany filtrando por userId impede editar transação de outro usuário;
-  // o userId também não é regravado, então a transação não muda de dono
-  const { count } = await db.transaction.updateMany({
-    where: {
-      id,
-      userId,
-    },
-    data,
-  });
-
-  if (count === 0) {
-    throw new Error("Transaction not found");
   }
 
   revalidatePath("/transactions");
+  revalidatePath("/");
 };
