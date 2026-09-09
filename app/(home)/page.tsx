@@ -51,7 +51,9 @@ const Home = async ({ searchParams }: HomeProps) => {
               key={`${format(period.startDate, DAY_FORMAT)}-${format(period.endDate, DAY_FORMAT)}`}
               from={format(period.startDate, DAY_FORMAT)}
               to={format(subDays(period.endDate, 1), DAY_FORMAT)}
-              hasPremiumPlan={user.publicMetadata?.subscriptionPlan !== null}
+              // quem nunca assinou nao tem a chave no metadata: ausente e diferente
+              // de nulo, entao a checagem precisa ser por valor presente
+              hasPremiumPlan={Boolean(user.publicMetadata?.subscriptionPlan)}
             />
             <PeriodSelect years={years} />
           </div>
