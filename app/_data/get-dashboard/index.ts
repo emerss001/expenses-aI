@@ -1,8 +1,12 @@
 import { db } from "@/app/_lib/prisma";
 import { TransactionType } from "@prisma/client";
-import { TotalExpensePerCategory, TransactionPercentagePerType } from "./types";
 import { auth } from "@clerk/nextjs/server";
 import { DashboardPeriod } from "@/app/_utils/dashboard-period";
+import {
+  calculateBalance,
+  calculateExpensesPerCategory,
+  calculateTypesPercentage,
+} from "./calculate";
 
 export const getDashboard = async (period: DashboardPeriod) => {
   const { userId } = await auth();
@@ -19,56 +23,27 @@ export const getDashboard = async (period: DashboardPeriod) => {
     },
   };
 
-  const depositsTotal = Number(
-    (
-      await db.transaction.aggregate({
-        where: { ...where, type: "DEPOSIT" },
-        _sum: { amount: true },
-      })
-    )?._sum?.amount,
-  );
+  const sumByType = async (type: TransactionType) =>
+    Number(
+      (
+        await db.transaction.aggregate({
+          where: { ...where, type },
+          _sum: { amount: true },
+        })
+      )._sum.amount ?? 0,
+    );
 
-  const investmentsTotal = Number(
-    (
-      await db.transaction.aggregate({
-        where: { ...where, type: "INVESTMENT" },
-        _sum: { amount: true },
-      })
-    )?._sum?.amount,
-  );
-
-  const expensesTotal = Number(
-    (
-      await db.transaction.aggregate({
-        where: { ...where, type: "EXPENSE" },
-        _sum: { amount: true },
-      })
-    )?._sum?.amount,
-  );
-
-  const balance = depositsTotal - investmentsTotal - expensesTotal;
-  const transactionsTotal = Number(
-    (
-      await db.transaction.aggregate({
-        where,
-        _sum: { amount: true },
-      })
-    )._sum.amount,
-  );
-  const typesPercentage: TransactionPercentagePerType = {
-    [TransactionType.DEPOSIT]: Math.round(
-      (Number(depositsTotal || 0) / Number(transactionsTotal)) * 100,
-    ),
-    [TransactionType.EXPENSE]: Math.round(
-      (Number(expensesTotal || 0) / Number(transactionsTotal)) * 100,
-    ),
-    [TransactionType.INVESTMENT]: Math.round(
-      (Number(investmentsTotal || 0) / Number(transactionsTotal)) * 100,
-    ),
-  };
-
-  const totalExpensePerCategory: TotalExpensePerCategory[] = (
-    await db.transaction.groupBy({
+  const [
+    depositsTotal,
+    investmentsTotal,
+    expensesTotal,
+    expensesByCategory,
+    lastTransactions,
+  ] = await Promise.all([
+    sumByType(TransactionType.DEPOSIT),
+    sumByType(TransactionType.INVESTMENT),
+    sumByType(TransactionType.EXPENSE),
+    db.transaction.groupBy({
       by: ["category"],
       where: { ...where, type: TransactionType.EXPENSE },
       _sum: { amount: true },
@@ -77,30 +52,29 @@ export const getDashboard = async (period: DashboardPeriod) => {
           amount: "desc",
         },
       },
-    })
-  ).map((item) => ({
-    category: item.category,
-    totalAmount: Number(item._sum.amount),
-    percentageOfTotal: Math.round(
-      (Number(item._sum.amount) / Number(expensesTotal)) * 100,
-    ),
-  }));
+    }),
+    db.transaction.findMany({
+      where,
+      orderBy: {
+        date: "desc",
+      },
+      take: 15,
+    }),
+  ]);
 
-  const lastTransactions = await db.transaction.findMany({
-    where,
-    orderBy: {
-      date: "desc",
-    },
-    take: 15,
-  });
+  const totals = { depositsTotal, investmentsTotal, expensesTotal };
 
   return {
-    balance,
-    depositsTotal,
-    investmentsTotal,
-    expensesTotal,
-    typesPercentage,
-    totalExpensePerCategory,
+    ...totals,
+    balance: calculateBalance(totals),
+    typesPercentage: calculateTypesPercentage(totals),
+    totalExpensePerCategory: calculateExpensesPerCategory(
+      expensesByCategory.map((item) => ({
+        category: item.category,
+        totalAmount: Number(item._sum.amount ?? 0),
+      })),
+      expensesTotal,
+    ),
     lastTransactions,
   };
 };
