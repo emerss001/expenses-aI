@@ -41,6 +41,8 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { upsetTransaction } from "../_actions/upsert-transaction";
+import { ActionMessage } from "./ui/action-message";
+import { CONNECTION_ERROR_MESSAGE } from "../_lib/action-result";
 import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 
@@ -79,6 +81,7 @@ const UpsertTransactionDialog = ({
   transactionId,
 }: UpsertTransactionDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -94,12 +97,21 @@ const UpsertTransactionDialog = ({
 
   const onSubmit = async (data: FormSchema) => {
     setIsSubmitting(true);
+    setErrorMessage(null);
+
     try {
-      await upsetTransaction({ ...data, id: transactionId });
+      const result = await upsetTransaction({ ...data, id: transactionId });
+
+      if (!result.success) {
+        setErrorMessage(result.message);
+        return;
+      }
+
       setDialogOPen(false);
       form.reset();
     } catch (error) {
       console.error(error);
+      setErrorMessage(CONNECTION_ERROR_MESSAGE);
     } finally {
       setIsSubmitting(false);
     }
@@ -114,6 +126,7 @@ const UpsertTransactionDialog = ({
         setDialogOPen(open);
         if (!open) {
           form.reset();
+          setErrorMessage(null);
         }
       }}
     >
@@ -267,6 +280,8 @@ const UpsertTransactionDialog = ({
                 </FormItem>
               )}
             />
+
+            <ActionMessage message={errorMessage} />
 
             <DialogFooter>
               <DialogClose asChild>

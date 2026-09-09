@@ -13,6 +13,8 @@ import {
   DialogTrigger,
 } from "@/app/_components/ui/dialog";
 import { ScrollArea } from "@/app/_components/ui/scroll-area";
+import { ActionMessage } from "@/app/_components/ui/action-message";
+import { CONNECTION_ERROR_MESSAGE } from "@/app/_lib/action-result";
 import { BotIcon, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 import Markdown from "react-markdown";
@@ -25,10 +27,22 @@ interface AiReportButtonProps {
 const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
   const [report, setReport] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const messageForStatus = (status: number) => {
+    if (status === 401) {
+      return "Sua sessão expirou. Entre novamente para continuar.";
+    }
+    if (status === 403) {
+      return "O relatório de IA está disponível apenas nos planos premium.";
+    }
+    return "Não foi possível gerar o relatório. Tente novamente em instantes.";
+  };
 
   const handleGenerateReportClick = async () => {
     try {
       setIsLoading(true);
+      setErrorMessage(null);
       setReport(""); // Limpa o relatório anterior
 
       const response = await fetch("/api/report/ai", {
@@ -38,7 +52,8 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
       });
 
       if (!response.ok || !response.body) {
-        throw new Error("Erro ao gerar relatório");
+        setErrorMessage(messageForStatus(response.status));
+        return;
       }
 
       // Prepara o leitor para ler os pedaços (chunks) de texto
@@ -56,7 +71,7 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
       }
     } catch (error) {
       console.error(error);
-      alert("Falha ao gerar o relatório.");
+      setErrorMessage(CONNECTION_ERROR_MESSAGE);
     } finally {
       setIsLoading(false);
     }
@@ -107,6 +122,8 @@ const AiReportButton = ({ month, hasPremiumPlan }: AiReportButtonProps) => {
                 )}
               </div>
             </ScrollArea>
+
+            <ActionMessage message={errorMessage} />
 
             <DialogFooter>
               <DialogClose asChild>

@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteTransaction } from "@/app/_actions/delete-transaction";
+import { ActionMessage } from "@/app/_components/ui/action-message";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,6 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/app/_components/ui/alert-dialog";
 import { Button } from "@/app/_components/ui/button";
+import { CONNECTION_ERROR_MESSAGE } from "@/app/_lib/action-result";
 import { LoaderCircle, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 
@@ -27,22 +29,38 @@ const DeleteTransactionButton = ({
 }: DeleteTransactionButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (!open) {
+      setErrorMessage(null);
+    }
+  };
 
   const handleConfirmClick = async () => {
     setIsDeleting(true);
+    setErrorMessage(null);
+
     try {
-      await deleteTransaction(transactionId);
+      const result = await deleteTransaction(transactionId);
+
+      if (!result.success) {
+        setErrorMessage(result.message);
+        return;
+      }
+
       setIsOpen(false);
     } catch (error) {
       console.error(error);
-      alert("Não foi possível excluir a transação.");
+      setErrorMessage(CONNECTION_ERROR_MESSAGE);
     } finally {
       setIsDeleting(false);
     }
   };
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+    <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
       <AlertDialogTrigger asChild>
         <Button
           variant="ghost"
@@ -63,6 +81,8 @@ const DeleteTransactionButton = ({
             pode ser desfeita.
           </AlertDialogDescription>
         </AlertDialogHeader>
+
+        <ActionMessage message={errorMessage} />
 
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>

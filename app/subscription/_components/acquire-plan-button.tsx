@@ -2,7 +2,9 @@
 
 import { createStripeCheckout } from "@/app/_actions/create-stripe-checkout";
 import { createStripePortal } from "@/app/_actions/stripe-customer-portal";
+import { ActionMessage } from "@/app/_components/ui/action-message";
 import { Button } from "@/app/_components/ui/button";
+import { CONNECTION_ERROR_MESSAGE } from "@/app/_lib/action-result";
 import { useState } from "react";
 
 interface AcquirePlanButtonProps {
@@ -13,78 +15,85 @@ interface AcquirePlanButtonProps {
 
 const AcquirePlanButton = ({ priceId, buttonType }: AcquirePlanButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleAcquirePlanClick = async () => {
+    setIsLoading(true);
+    setErrorMessage(null);
+
     try {
-      setIsLoading(true);
+      const result = await createStripeCheckout(priceId);
 
-      // A action retorna a URL de checkout
-      if (!priceId) {
-        throw new Error("Price ID não fornecido.");
+      if (!result.success) {
+        setErrorMessage(result.message);
+        setIsLoading(false);
+        return;
       }
 
-      const { sessionUrl } = await createStripeCheckout(priceId);
-
-      if (sessionUrl) {
-        window.location.href = sessionUrl;
-      } else {
-        throw new Error("Não foi possível gerar a URL de pagamento.");
-      }
+      // redireciona para o Stripe; a tela sai do ar, então o loading continua
+      window.location.href = result.data.sessionUrl;
     } catch (error) {
       console.error(error);
-      alert("Erro ao redirecionar para o pagamento.");
-    } finally {
+      setErrorMessage(CONNECTION_ERROR_MESSAGE);
       setIsLoading(false);
     }
   };
 
   const handleManageClick = async () => {
-    try {
-      setIsLoading(true);
-      const { portalUrl } = await createStripePortal();
+    setIsLoading(true);
+    setErrorMessage(null);
 
-      if (portalUrl) {
-        window.location.href = portalUrl; // Redirecionamento nativo
+    try {
+      const result = await createStripePortal();
+
+      if (!result.success) {
+        setErrorMessage(result.message);
+        setIsLoading(false);
+        return;
       }
+
+      window.location.href = result.data.portalUrl;
     } catch (error) {
       console.error(error);
-      alert("Erro ao acessar o portal do cliente.");
+      setErrorMessage(CONNECTION_ERROR_MESSAGE);
       setIsLoading(false);
     }
   };
 
-  if (buttonType === "manage") {
-    return (
-      <Button
-        variant="outline"
-        className="h-auto min-h-11 w-full whitespace-normal rounded-full font-semibold text-primary"
-        onClick={handleManageClick}
-        disabled={isLoading}
-      >
-        Gerenciar plano
-      </Button>
-    );
-  }
-
-  if (buttonType === "downgrade") {
-    return (
-      <Button
-        variant="outline"
-        className="h-auto min-h-11 w-full whitespace-normal rounded-full font-semibold text-red-300"
-      >
-        Fazer downgrade para este plano
-      </Button>
-    );
-  }
+  const buttonClassName =
+    "h-auto min-h-11 w-full whitespace-normal rounded-full font-semibold";
 
   return (
-    <Button
-      className="h-auto min-h-11 w-full whitespace-normal rounded-full font-semibold shadow-sm"
-      onClick={handleAcquirePlanClick}
-      disabled={isLoading}
-    >
-      {isLoading ? "Carregando..." : "Adquirir plano"}
-    </Button>
+    <div className="space-y-2">
+      {buttonType === "manage" && (
+        <Button
+          variant="outline"
+          className={`${buttonClassName} text-primary`}
+          onClick={handleManageClick}
+          disabled={isLoading}
+        >
+          {isLoading ? "Carregando..." : "Gerenciar plano"}
+        </Button>
+      )}
+
+      {buttonType === "downgrade" && (
+        <Button variant="outline" className={`${buttonClassName} text-red-300`}>
+          Fazer downgrade para este plano
+        </Button>
+      )}
+
+      {buttonType === "upgrade" && (
+        <Button
+          className={`${buttonClassName} shadow-sm`}
+          onClick={handleAcquirePlanClick}
+          disabled={isLoading}
+        >
+          {isLoading ? "Carregando..." : "Adquirir plano"}
+        </Button>
+      )}
+
+      <ActionMessage message={errorMessage} />
+    </div>
   );
 };
 
