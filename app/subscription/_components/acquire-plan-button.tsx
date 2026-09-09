@@ -8,12 +8,17 @@ import { CONNECTION_ERROR_MESSAGE } from "@/app/_lib/action-result";
 import { useState } from "react";
 
 interface AcquirePlanButtonProps {
+  /** Rótulo de aquisição definido pelo card (ex.: "Adquirir plano anual"). */
   title?: string;
   priceId?: string;
   buttonType: "manage" | "upgrade" | "downgrade";
 }
 
-const AcquirePlanButton = ({ priceId, buttonType }: AcquirePlanButtonProps) => {
+const AcquirePlanButton = ({
+  title,
+  priceId,
+  buttonType,
+}: AcquirePlanButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -88,7 +93,7 @@ const AcquirePlanButton = ({ priceId, buttonType }: AcquirePlanButtonProps) => {
           onClick={handleAcquirePlanClick}
           disabled={isLoading}
         >
-          {isLoading ? "Carregando..." : "Adquirir plano"}
+          {isLoading ? "Carregando..." : (title ?? "Adquirir plano")}
         </Button>
       )}
 
