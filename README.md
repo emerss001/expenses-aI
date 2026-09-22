@@ -4,17 +4,30 @@ Plataforma de gestão financeira pessoal: registre receitas, despesas e investim
 
 ## Telas
 
-> Coloque os prints em `docs/screenshots/` e descomente as linhas abaixo.
+<figure>
+  <figcaption><strong>Dashboard</strong> — Visão geral com saldo, receitas, despesas, investimentos, gráfico de resumo e gastos por categoria</figcaption>
+  <img src="docs/screenshots/dashboard.png" alt="Dashboard" width="800"/>
+</figure>
 
-<!-- ![Dashboard](docs/screenshots/dashboard.png) -->
+<figure>
+  <figcaption><strong>Transações</strong> — Listagem em tabela (desktop) ou cards (mobile) com filtros, edição e exclusão</figcaption>
+  <img src="docs/screenshots/transacoes.png" alt="Transações" width="800"/>
+</figure>
 
-<!-- ![Transações](docs/screenshots/transacoes.png) -->
+<figure>
+  <figcaption><strong>Relatório de IA</strong> — Análise inteligente dos hábitos de gasto gerada pelo Google Gemini em streaming</figcaption>
+  <img src="docs/screenshots/relatorio-ia.png" alt="Relatório de IA" width="800"/>
+</figure>
 
-<!-- ![Relatório de IA](docs/screenshots/relatorio-ia.png) -->
+<figure>
+  <figcaption><strong>Assinatura</strong> — Planos gratuito, mensal e anual com checkout Stripe e portal do cliente</figcaption>
+  <img src="docs/screenshots/assinatura.png" alt="Assinatura" width="800"/>
+</figure>
 
-<!-- ![Assinatura](docs/screenshots/assinatura.png) -->
-
-<!-- ![Login](docs/screenshots/login.png) -->
+<figure>
+  <figcaption><strong>Login</strong> — Autenticação via Clerk com suporte a múltiplos provedores</figcaption>
+  <img src="docs/screenshots/login.png" alt="Login" width="400"/>
+</figure>
 
 ## Funcionalidades
 
