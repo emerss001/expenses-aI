@@ -127,3 +127,8 @@ app/
   api/             rota do relatório de IA e webhook do Stripe
 prisma/            schema e migrações
 ```
+
+
+---
+
+Feito por [Emerson Neves](https://www.devemerson.site)
